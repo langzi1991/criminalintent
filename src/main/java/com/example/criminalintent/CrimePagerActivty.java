@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,7 +16,7 @@ import java.util.UUID;
  * Created by mac on 16/9/8.
  */
 
-public class CrimePagerActivty extends FragmentActivity {
+public class CrimePagerActivty extends AppCompatActivity {
     private ViewPager mViewPager;
     private ArrayList<Crime> mCrimes;
 
@@ -42,15 +43,9 @@ public class CrimePagerActivty extends FragmentActivity {
             }
         });
 
-        // 设置对应的页面
-        final UUID crimeId = (UUID) getIntent().getSerializableExtra(CrimeFragment.EXTRA_CRIME_ID);
-        for (int i = 0; i < mCrimes.size(); i++) {
-            if (mCrimes.get(i).getmId().equals(crimeId)) {
-                mViewPager.setCurrentItem(i);
-                break;
-            }
-        }
-
+        /**
+         * 设置监听函数要在setCurrentItem()函数之前,不然不会第一次设置不会起作用
+         */
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -60,9 +55,7 @@ public class CrimePagerActivty extends FragmentActivity {
             @Override
             public void onPageSelected(int position) {
                 Crime crime = mCrimes.get(position);
-                if (crime.getmTitle() != null) {
-                    setTitle(crime.getmTitle());
-                }
+                updateTitle(crime);
             }
 
             @Override
@@ -70,5 +63,20 @@ public class CrimePagerActivty extends FragmentActivity {
 
             }
         });
+
+        // 设置对应的页面
+        final UUID crimeId = (UUID) getIntent().getSerializableExtra(CrimeFragment.EXTRA_CRIME_ID);
+        for (int i = 0; i < mCrimes.size(); i++) {
+            if (mCrimes.get(i).getmId().equals(crimeId)) {
+                mViewPager.setCurrentItem(i);
+                break;
+            }
+        }
+    }
+
+    public void updateTitle(Crime crime) {
+        if (crime.getmTitle() != null) {
+            setTitle(crime.getmTitle());
+        }
     }
 }
